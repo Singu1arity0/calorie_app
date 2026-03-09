@@ -1,2 +1,5 @@
 dependency_overrides:
-  serious_python: 0.9.11
+  serious_python:
+    git:
+      url: https://github.com/flet-dev/serious-python.git
+      ref: f45f5f4  # это коммит, соответствующий serious_python 0.9.11, совместимый с flet 0.25.x
