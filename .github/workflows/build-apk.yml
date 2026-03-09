@@ -34,13 +34,13 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      - name: Собрать APK
-        run: flet build apk --entry-point ui.py --verbose
+      - name: Собрать APK (указываем точку входа через переменную)
+        run: |
+          export FLET_MAIN_SCRIPT=ui.py
+          flet build apk --verbose
 
       - name: Загрузить APK
         uses: actions/upload-artifact@v4
         with:
           name: Калькулятор-калорий
           path: build/apk/release/app-release.apk
-
-          
