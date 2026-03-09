@@ -39,6 +39,33 @@ jobs:
           export FLET_MAIN_SCRIPT=ui.py
           flet build apk --verbose
 
+      # Принудительно добавляем dependency_overrides для исправления serious_python
+      - name: Исправить версию serious_python в pubspec.yaml
+        run: |
+          # Находим сгенерированный pubspec.yaml
+          PUBSPEC_FILE="build/flutter/pubspec.yaml"
+          if [ -f "$PUBSPEC_FILE" ]; then
+            echo "Добавляем dependency_overrides для serious_python"
+            # Добавляем блок в конец файла, если его ещё нет
+            echo "" >> "$PUBSPEC_FILE"
+            echo "dependency_overrides:" >> "$PUBSPEC_FILE"
+            echo "  serious_python:" >> "$PUBSPEC_FILE"
+            echo "    git:" >> "$PUBSPEC_FILE"
+            echo "      url: https://github.com/flet-dev/serious-python.git" >> "$PUBSPEC_FILE"
+            echo "      ref: f45f5f4" >> "$PUBSPEC_FILE"
+          else
+            echo "Файл pubspec.yaml не найден!"
+            exit 1
+          fi
+
+      # Пересобираем с новыми зависимостями
+      - name: Пересобрать APK с исправленным serious_python
+        run: |
+          cd build/flutter
+          flutter clean
+          flutter pub get
+          flutter build apk --release
+
       - name: Прописать название "Калькулятор калорий" в манифесте
         run: |
           find build/apk -name "AndroidManifest.xml" -exec sed -i 's/android:label="[^"]*"/android:label="Калькулятор калорий"/g' {} \;
@@ -46,5 +73,5 @@ jobs:
       - name: Загрузить APK
         uses: actions/upload-artifact@v4
         with:
-          name: Калькулятор-калорий
+          name: calorie-counter-apk        # ← латиница, чтобы скачивалось без ошибок
           path: build/apk/app-release.apk
