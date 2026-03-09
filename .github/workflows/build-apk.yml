@@ -34,15 +34,17 @@ jobs:
           flutter-version: '3.24.3'
           channel: 'stable'
 
-      - name: Собрать APK и прописать название
+      - name: Собрать APK (точка входа ui.py)
         run: |
           export FLET_MAIN_SCRIPT=ui.py
           flet build apk --verbose
-          # После сборки правим AndroidManifest.xml
-          find build -name "AndroidManifest.xml" -exec sed -i 's/android:label="[^"]*"/android:label="Калькулятор калорий"/g' {} \;
+
+      - name: Прописать название "Калькулятор калорий" в манифесте
+        run: |
+          find build/apk -name "AndroidManifest.xml" -exec sed -i 's/android:label="[^"]*"/android:label="Калькулятор калорий"/g' {} \;
 
       - name: Загрузить APK
         uses: actions/upload-artifact@v4
         with:
           name: Калькулятор-калорий
-          path: build/apk/release/app-release.apk
+          path: build/apk/app-release.apk
