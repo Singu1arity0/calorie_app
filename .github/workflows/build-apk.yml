@@ -39,17 +39,10 @@ jobs:
           export FLET_MAIN_SCRIPT=ui.py
           flet build apk --verbose
 
-      # Создаём pubspec_overrides.yaml с правильной версией serious_python
-      - name: Исправить версию serious_python через pubspec_overrides.yaml
+      # Копируем твой pubspec_overrides.yaml в папку Flutter-проекта
+      - name: Применить исправление serious_python
         run: |
-          mkdir -p build/flutter
-          cat > build/flutter/pubspec_overrides.yaml << 'EOF'
-dependency_overrides:
-  serious_python:
-    git:
-      url: https://github.com/flet-dev/serious-python.git
-      ref: f45f5f4
-EOF
+          cp pubspec_overrides.yaml build/flutter/
 
       - name: Пересобрать APK с исправленным serious_python
         run: |
