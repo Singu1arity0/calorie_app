@@ -39,26 +39,18 @@ jobs:
           export FLET_MAIN_SCRIPT=ui.py
           flet build apk --verbose
 
-      # Принудительно добавляем dependency_overrides для исправления serious_python
-      - name: Исправить версию serious_python в pubspec.yaml
+      # Создаём pubspec_overrides.yaml с правильной версией serious_python
+      - name: Исправить версию serious_python через pubspec_overrides.yaml
         run: |
-          # Находим сгенерированный pubspec.yaml
-          PUBSPEC_FILE="build/flutter/pubspec.yaml"
-          if [ -f "$PUBSPEC_FILE" ]; then
-            echo "Добавляем dependency_overrides для serious_python"
-            # Добавляем блок в конец файла, если его ещё нет
-            echo "" >> "$PUBSPEC_FILE"
-            echo "dependency_overrides:" >> "$PUBSPEC_FILE"
-            echo "  serious_python:" >> "$PUBSPEC_FILE"
-            echo "    git:" >> "$PUBSPEC_FILE"
-            echo "      url: https://github.com/flet-dev/serious-python.git" >> "$PUBSPEC_FILE"
-            echo "      ref: f45f5f4" >> "$PUBSPEC_FILE"
-          else
-            echo "Файл pubspec.yaml не найден!"
-            exit 1
-          fi
+          mkdir -p build/flutter
+          cat > build/flutter/pubspec_overrides.yaml << 'EOF'
+dependency_overrides:
+  serious_python:
+    git:
+      url: https://github.com/flet-dev/serious-python.git
+      ref: f45f5f4
+EOF
 
-      # Пересобираем с новыми зависимостями
       - name: Пересобрать APK с исправленным serious_python
         run: |
           cd build/flutter
@@ -73,5 +65,5 @@ jobs:
       - name: Загрузить APK
         uses: actions/upload-artifact@v4
         with:
-          name: calorie-counter-apk        # ← латиница, чтобы скачивалось без ошибок
+          name: calorie-counter-apk
           path: build/apk/app-release.apk
