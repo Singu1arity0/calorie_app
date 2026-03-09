@@ -1,0 +1,10 @@
+name: calorie_app
+description: Calorie counter app
+python:
+  flet_embed_version: 0.25.0   # фикс для совместимости
+build:
+  apk:
+    name: "Калькулятор калорий"
+    package: "com.yourname.calorie"
+    version: "1.0.0"
+    icon: "assets/icon.png"
